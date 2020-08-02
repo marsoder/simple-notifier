@@ -1,0 +1,2 @@
+class ZeroArgumentsError(Exception):
+    pass
