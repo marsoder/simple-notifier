@@ -9,6 +9,8 @@ def create_parser():
     parser.add_argument("--minutes", type=int, const=0, nargs="?", default=0)
     parser.add_argument("--hours", type=int, const=0, nargs="?", default=0,
                         help="hours to elapse before displaying notification")
+    parser.add_argument("--message", type=str, const=0,
+                        nargs="?", default="Stay determined!")
     return parser
 
 
@@ -20,3 +22,8 @@ def parse_arguments(parser):
 
     return args
 
+
+def get_arguments():
+    parser = create_parser()
+    args = parse_arguments(parser)
+    return args.seconds, args.minutes, args.hours, args.message

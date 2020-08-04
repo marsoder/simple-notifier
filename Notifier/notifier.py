@@ -1,35 +1,56 @@
 from datetime import datetime, timedelta
 import gi
-import argparse
 from gi.repository import Gio
 
-class Trigger:
-    NOW = datetime.now()
-
+class TriggerTime:
     def __init__(self, seconds=0, minutes=0, hours=0):
 
         self.seconds = seconds
         self.minutes = minutes
         self.hours = hours
 
-    def __repr__(self):
-        return f"<Notification(seconds = {self.seconds}, hours = {self.hours}, message = {self.message}), {hex(id(self))}>"
+    @property
+    def seconds(self): return self._seconds
 
-    def display_when(self):
-        return self.NOW + timedelta(hours=self.hours, minutes=self.minutes, seconds=self.seconds)
+    @property
+    def minutes(self): return self._minutes
 
+    @property
+    def hours(self): return self._hours
 
+    @seconds.setter
+    def seconds(self, value):
+        if value > 59:
+            raise ValueError("seconds must be 0-59")
+        self._seconds = value
+
+    @minutes.setter
+    def minutes(self, value):
+        if value > 59:
+            raise ValueError("minutes must be 0-59")
+        self._minutes = value
+
+    @hours.setter
+    def hours(self, value):
+        if value > 23:
+            raise ValueError("hours must be 0-23")
+        self._hours = value
+        
+    @property
     def total_seconds(self):
         return (self.hours * 60**2) + (self.minutes*60) + (self.seconds)
 
+    @property
     def time_elapsed(self):
-        return str(timedelta(seconds=self.total_seconds()))
+        return str(timedelta(seconds=self.total_seconds))
 
 class Notification:    
-    DEFAULT_MESSAGE = "Time is up"
-    def __init__(self, trigger_timestamp=None, message=None):
-        self.message = message or self.DEFAULT_MESSAGE
-        self.trigger_timestamp = trigger_timestamp
+    def __init__(self, message, time_elapsed=None):
+        self.message = message
+        self.time_elapsed = time_elapsed
+        if time_elapsed:
+            self.message += "\n" + f"Time elapsed: {time_elapsed}"
+            
     def display_notification(self):
         Application = Gio.Application.new(
             "my.program", Gio.ApplicationFlags.FLAGS_NONE)
